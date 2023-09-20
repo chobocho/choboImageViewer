@@ -1,11 +1,17 @@
 using ImageViewer.Properties;
 using System.Windows.Forms;
+using System.Windows.Forms.VisualStyles;
 
 namespace ImageViewer
 {
     public partial class ImageViewerForm : Form
     {
         private string ImageFileName = string.Empty;
+
+        private const int  minimumSize = 256;
+        private const int  maximumSize = 800;
+
+        private bool isProcessing = false;
 
         public ImageViewerForm(string[] args)
         {
@@ -44,17 +50,23 @@ namespace ImageViewer
             var LoadedImage = Image.FromFile(filename);
             pictureBox.BackgroundImage = LoadedImage;
 
-            Width = LoadedImage.Width > 256 ? LoadedImage.Width : 256;
-            Width = LoadedImage.Width > 1024 ? 1024 : LoadedImage.Width;
+            var width = LoadedImage.Width > minimumSize ? LoadedImage.Width : minimumSize;
+            width = LoadedImage.Width > maximumSize ? maximumSize : LoadedImage.Width;
 
-            Height = LoadedImage.Height > 256 ? LoadedImage.Height : 256;
-            Height = LoadedImage.Height > 1024 ? 1024 : LoadedImage.Height;
+            var height = LoadedImage.Height > minimumSize ? LoadedImage.Height : minimumSize;
+            height = LoadedImage.Height > maximumSize ? maximumSize : LoadedImage.Height;
+
+            this.Width = width;
+            this.Height = height;
+
+            isProcessing = false;
         }
 
         void applyDefaultImage()
         {
             var LoadedImage = Properties.Resources.default_image;
             pictureBox.BackgroundImage = LoadedImage;
+            isProcessing = false;
         }
 
         void rotateImage(System.Drawing.RotateFlipType angle)
@@ -63,15 +75,18 @@ namespace ImageViewer
             LoadedImage.RotateFlip(angle);
             pictureBox.BackgroundImage = LoadedImage;
 
-            Width = LoadedImage.Width > 256 ? LoadedImage.Width : 256;
-            Width = LoadedImage.Width > 1024 ? 1024 : LoadedImage.Width;
-
-            Height = LoadedImage.Height > 256 ? LoadedImage.Height : 256;
-            Height = LoadedImage.Height > 1024 ? 1024 : LoadedImage.Height;
+            this.Width = LoadedImage.Width;
+            this.Height = LoadedImage.Height;
         }
 
         private void ImageViewForm_KeyDown(object sender, KeyEventArgs e)
         {
+            /**
+             * By speed issue, block this code for temporary
+             * 
+            if (isProcessing) return;
+
+            isProcessing = true;
             if (e.KeyData == Keys.R)
             {
                 rotateImage(RotateFlipType.Rotate270FlipXY);
@@ -79,7 +94,8 @@ namespace ImageViewer
             {
                 rotateImage(RotateFlipType.Rotate90FlipXY);
             }
-
+            isProcessing = false;
+            */
         }
     }
 }
