@@ -1,2 +1,5 @@
-# choboImageViewer
-Simple image view by c#
+# Chobocho's ImageViewer
+
+### Simple image file viewer  
+
+![screen shot](doc/imageviewer.png)
