@@ -6,12 +6,13 @@ namespace ImageViewer
 {
     public partial class ImageViewerForm : Form
     {
+        private const string version = "Chobocho's Image Viewer V0.11";
         private string ImageFileName = string.Empty;
 
-        private const int  minimumSize = 256;
-        private const int  maximumSize = 800;
+        private const int minimumSize = 256;
+        private const int maximumSize = 800;
 
-        private bool isProcessing = false;
+        private IFileManager _fileManager = new FileManager();
 
         public ImageViewerForm(string[] args)
         {
@@ -20,6 +21,8 @@ namespace ImageViewer
             {
                 ImageFileName = args[0];
             }
+
+            Text = version;
         }
 
         private void ImageViewerForm_Load(object sender, EventArgs e)
@@ -31,6 +34,7 @@ namespace ImageViewer
             }
 
             applyImage(ImageFileName);
+            _fileManager.setFileName(ImageFileName);
         }
 
         void ImageViewrForm_DragEnter(object sender, DragEventArgs e)
@@ -41,32 +45,37 @@ namespace ImageViewer
         void ImageViewrForm_DragDrop(object sender, DragEventArgs e)
         {
             string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
-            if (files == null || !File.Exists(files[0])) { applyDefaultImage(); }
+            if (files == null || !File.Exists(files[0]))
+            {
+                applyDefaultImage();
+            }
+
             applyImage(files[0]);
+            _fileManager.setFileName(files[0]);
         }
 
         void applyImage(string filename)
         {
+            if (filename == null || filename == string.Empty) return;
             var LoadedImage = Image.FromFile(filename);
             pictureBox.BackgroundImage = LoadedImage;
 
             var width = LoadedImage.Width > minimumSize ? LoadedImage.Width : minimumSize;
-            width = LoadedImage.Width > maximumSize ? maximumSize : LoadedImage.Width;
+            width = LoadedImage.Width > maximumSize ? maximumSize : width;
 
             var height = LoadedImage.Height > minimumSize ? LoadedImage.Height : minimumSize;
-            height = LoadedImage.Height > maximumSize ? maximumSize : LoadedImage.Height;
+            height = LoadedImage.Height > maximumSize ? maximumSize : height;
 
             this.Width = width;
             this.Height = height;
 
-            isProcessing = false;
+            Text = filename;
         }
 
         void applyDefaultImage()
         {
             var LoadedImage = Properties.Resources.default_image;
             pictureBox.BackgroundImage = LoadedImage;
-            isProcessing = false;
         }
 
         void rotateImage(System.Drawing.RotateFlipType angle)
@@ -75,27 +84,43 @@ namespace ImageViewer
             LoadedImage.RotateFlip(angle);
             pictureBox.BackgroundImage = LoadedImage;
 
-            this.Width = LoadedImage.Width;
-            this.Height = LoadedImage.Height;
+            var width = LoadedImage.Width > minimumSize ? LoadedImage.Width : minimumSize;
+            width = LoadedImage.Width > maximumSize ? maximumSize : width;
+
+            var height = LoadedImage.Height > minimumSize ? LoadedImage.Height : minimumSize;
+            height = LoadedImage.Height > maximumSize ? maximumSize : height;
+
+            this.Width = width;
+            this.Height = height;
+
+            pictureBox.Refresh();
         }
 
         private void ImageViewForm_KeyDown(object sender, KeyEventArgs e)
         {
-            /**
-             * By speed issue, block this code for temporary
-             * 
-            if (isProcessing) return;
-
-            isProcessing = true;
-            if (e.KeyData == Keys.R)
+            switch (e.KeyData)
             {
-                rotateImage(RotateFlipType.Rotate270FlipXY);
-            } else if (e.KeyData == Keys.L)
-            {
-                rotateImage(RotateFlipType.Rotate90FlipXY);
+                case Keys.L: 
+                    rotateImage(RotateFlipType.Rotate90FlipXY);
+                    break;
+                case Keys.R: 
+                    rotateImage(RotateFlipType.Rotate270FlipXY);
+                    break;
+                case Keys.Left: 
+                    applyImage(_fileManager.prev());
+                    break;
+                case Keys.Right: 
+                    applyImage(_fileManager.next());
+                    break;
+                case Keys.Up:
+                    applyImage(_fileManager.head());
+                    break;
+                case Keys.Down:
+                    applyImage(_fileManager.tail());
+                    break;
+                default:
+                    break;
             }
-            isProcessing = false;
-            */
         }
     }
 }
