@@ -57,6 +57,13 @@ namespace ImageViewer
         void applyImage(string filename)
         {
             if (filename == null || filename == string.Empty) return;
+
+            if (pictureBox.BackgroundImage != null)
+            {
+                pictureBox.BackgroundImage.Dispose();
+                pictureBox.BackgroundImage = null;
+            }
+
             var LoadedImage = Image.FromFile(filename);
             pictureBox.BackgroundImage = LoadedImage;
 
@@ -82,6 +89,7 @@ namespace ImageViewer
         {
             var LoadedImage = pictureBox.BackgroundImage;
             LoadedImage.RotateFlip(angle);
+
             pictureBox.BackgroundImage = LoadedImage;
 
             var width = LoadedImage.Width > minimumSize ? LoadedImage.Width : minimumSize;
