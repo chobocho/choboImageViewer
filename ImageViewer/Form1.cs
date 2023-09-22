@@ -67,40 +67,45 @@ namespace ImageViewer
             var LoadedImage = Image.FromFile(filename);
             pictureBox.BackgroundImage = LoadedImage;
 
-            var width = LoadedImage.Width > minimumSize ? LoadedImage.Width : minimumSize;
-            width = LoadedImage.Width > maximumSize ? maximumSize : width;
-
-            var height = LoadedImage.Height > minimumSize ? LoadedImage.Height : minimumSize;
-            height = LoadedImage.Height > maximumSize ? maximumSize : height;
-
-            this.Width = width;
-            this.Height = height;
+            resizeWindow(LoadedImage.Width, LoadedImage.Height);
 
             Text = filename;
         }
 
+        private void resizeWindow(int imageWidth, int imageHeight)
+        {
+            if (imageWidth > minimumSize && imageWidth < maximumSize &&
+                imageHeight > minimumSize && imageHeight < maximumSize)
+            {
+                this.Width = imageWidth;
+                this.Height = imageHeight;
+                return;
+            }
+            
+            if (imageWidth < imageHeight)
+            {
+                this.Width = imageWidth * maximumSize / imageHeight;
+                this.Height = maximumSize;
+                return;
+            }
+            
+            this.Width = maximumSize;
+            this.Height = imageHeight * maximumSize / imageWidth;
+        }
+
         void applyDefaultImage()
         {
-            var LoadedImage = Properties.Resources.default_image;
-            pictureBox.BackgroundImage = LoadedImage;
+            var defaultImage = Properties.Resources.default_image;
+            pictureBox.BackgroundImage = defaultImage;
         }
 
         void rotateImage(System.Drawing.RotateFlipType angle)
         {
-            var LoadedImage = pictureBox.BackgroundImage;
-            LoadedImage.RotateFlip(angle);
+            var loadedImage = pictureBox.BackgroundImage;
+            loadedImage?.RotateFlip(angle);
 
-            pictureBox.BackgroundImage = LoadedImage;
-
-            var width = LoadedImage.Width > minimumSize ? LoadedImage.Width : minimumSize;
-            width = LoadedImage.Width > maximumSize ? maximumSize : width;
-
-            var height = LoadedImage.Height > minimumSize ? LoadedImage.Height : minimumSize;
-            height = LoadedImage.Height > maximumSize ? maximumSize : height;
-
-            this.Width = width;
-            this.Height = height;
-
+            pictureBox.BackgroundImage = loadedImage;
+            resizeWindow(loadedImage.Width, loadedImage.Height);
             pictureBox.Refresh();
         }
 
