@@ -6,7 +6,7 @@ namespace ImageViewer
 {
     public partial class ImageViewerForm : Form
     {
-        private const string version = "Chobocho's Image Viewer V0.11";
+        private const string version = "Chobocho's Image Viewer V0.12";
         private string ImageFileName = string.Empty;
 
         private const int minimumSize = 256;
@@ -131,6 +131,9 @@ namespace ImageViewer
                 case Keys.Down:
                     applyImage(_fileManager.tail());
                     break;
+                case Keys.F1:
+                    showHelpMessage();
+                    break;
                 case Keys.Escape:
                     this.Close();
                     break;
@@ -142,6 +145,18 @@ namespace ImageViewer
                 default:
                     break;
             }
+        }
+
+        private void showHelpMessage()
+        {
+            String helpMessage = "F1: Help\n\n" + 
+                                  "← : Previous image\n" + 
+                                  "→ : Next image\n\n" + 
+                                  "↑ : First image in the folder\n" + 
+                                  "↓ : Last image in the folder\n\n" +
+                                  "ESC: Quit";
+            
+            MessageBox.Show(helpMessage, "[Help]");
         }
     }
 }
