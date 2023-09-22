@@ -131,6 +131,14 @@ namespace ImageViewer
                 case Keys.Down:
                     applyImage(_fileManager.tail());
                     break;
+                case Keys.Escape:
+                    this.Close();
+                    break;
+                case Keys.F:
+                    this.WindowState = this.WindowState == FormWindowState.Maximized
+                        ? FormWindowState.Normal
+                        : FormWindowState.Maximized;
+                    break;
                 default:
                     break;
             }
